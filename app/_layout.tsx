@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { CourseProvider } from '../contexts/CourseContext';
+import { requestNotificationPermissions } from '../lib/notifications';
 
 // ─── Auth Guard ───────────────────────────────────────────────────────────────
 
@@ -51,11 +53,18 @@ function AuthGuard(): React.JSX.Element {
 // ─── Root Layout ──────────────────────────────────────────────────────────────
 
 export default function RootLayout(): React.JSX.Element {
+  useEffect(() => {
+    // Request notification permissions once on app start
+    requestNotificationPermissions();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <StatusBar style="auto" />
-        <AuthGuard />
+        <CourseProvider>
+          <StatusBar style="auto" />
+          <AuthGuard />
+        </CourseProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

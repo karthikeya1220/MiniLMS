@@ -36,8 +36,17 @@ export default function RegisterScreen(): React.JSX.Element {
         email: email.trim().toLowerCase(),
         password,
       });
-    } catch {
-      setErrorMessage('Registration failed. Please try a different username.');
+    } catch (error: any) {
+      if (error.response?.data?.errors?.length > 0) {
+        // The API returns an array of error objects like [{ email: "Email is invalid" }]
+        const firstErrorObj = error.response.data.errors[0];
+        const firstErrorMessage = Object.values(firstErrorObj)[0] as string;
+        setErrorMessage(firstErrorMessage || 'Registration failed.');
+      } else if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('Registration failed. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
